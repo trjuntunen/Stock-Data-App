@@ -10,34 +10,44 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Class that provides a getDataForTicker() function that
- * returns data for the specified ticker.
+ * Class that represents a JSONObject storing API data
+ * about the given ticker. Methods getStringValueWithKey() 
+ * and getDoubleValueWithKey() are used to get the data.
  * @author Teddy Juntunen
  *
  */
 
-public class DataManager {
-
-	public void getDataForTicker(String ticker) {
-		URL url = buildURLForTicker(ticker);
+public class Ticker {
+	
+	private JSONObject tickerDataObject;
+	private String ticker;
+	
+	public Ticker(String ticker) {
+		this.ticker = ticker;
+		tickerDataObject = new JSONObject();
 		
-		/* Connect to the URL and read it. */
+		/* Build the Ticker object when it's instantiated. */
+		buildTicker();
+	}
+	
+	/* Returns a JSONObject storing the returned API data for the given ticker. */
+	private void buildTicker() {
+		URL url = buildURLForTicker(ticker);
 		URLConnection connection = openConnectionToURL(url);
-		InputStream inputStream = getInputStreamFromConnection(connection);
-		InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+		InputStreamReader inputStreamReader = getInputStreamReaderForConnection(connection);
 		BufferedReader reader = new BufferedReader(inputStreamReader);
 		
 		/* Only need to read one line because json is stored in one line. */
-		String jsonData = readLineFromBufferedReader(reader);
+		String jsonData = readLineWithReader(reader);
+		JSONObject jsonObject = createJsonObjectFromString(jsonData);
 		
-		/* Get the data in the nested Json objects. */
-		JSONObject jsonObject = createNewJsonObject(jsonData);
-		JSONObject nestedJsonObject = getNestedJsonObject(jsonObject, "quote");
-		
-		double latestPrice = getDoubleValueFromJson("latestPrice", nestedJsonObject);
-		String companyName = getStringValueFromJson("companyName", nestedJsonObject);
-		
-		System.out.println(companyName);
+		/* The key "quote" is just the key for this API's json data. */
+		tickerDataObject = getNestedJsonObject(jsonObject, "quote");
+	}
+	
+	private InputStreamReader getInputStreamReaderForConnection(URLConnection connection) {
+		InputStream inputStream = getInputStreamFromConnection(connection);
+		return new InputStreamReader(inputStream);
 	}
 	
 	private URL buildURLForTicker(String ticker) {
@@ -78,7 +88,7 @@ public class DataManager {
 		return inputStream;
 	}
 	
-	private String readLineFromBufferedReader(BufferedReader reader) {
+	private String readLineWithReader(BufferedReader reader) {
 		String line = "";
 		try {
 			line = reader.readLine();
@@ -98,27 +108,27 @@ public class DataManager {
 		return newObject;
 	}
 	
-	private String getStringValueFromJson(String key, JSONObject jsonObject) {
+	public String getStringValueWithKey(String key) {
 		String result = "";
 		try {
-			result = (String) jsonObject.get(key);
+			result = (String) tickerDataObject.get(key);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		return result;
 	}
 	
-	private double getDoubleValueFromJson(String key, JSONObject jsonObject) {
+	public double getDoubleValueWithKey(String key) {
 		double result = 0.0;
 		try {
-			result = (double) jsonObject.get(key);
+			result = (double) tickerDataObject.get(key);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		return result;
 	}
 	
-	private JSONObject createNewJsonObject(String json) {
+	private JSONObject createJsonObjectFromString(String json) {
 		JSONObject jsonObject = null;
 		try {
 			jsonObject = new JSONObject(json);
