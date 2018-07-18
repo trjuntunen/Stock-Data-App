@@ -20,21 +20,24 @@ public class DataManager {
 
 	public void getDataForTicker(String ticker) {
 		URL url = buildURLForTicker(ticker);
-		getDataFromURL(url);
-	}
-	
-	private void getDataFromURL(URL url) {
+		
+		/* Connect to the URL and read it. */
 		URLConnection connection = openConnectionToURL(url);
 		InputStream inputStream = getInputStreamFromConnection(connection);
 		InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
 		BufferedReader reader = new BufferedReader(inputStreamReader);
+		
+		/* Only need to read one line because json is stored in one line. */
 		String jsonData = readLineFromBufferedReader(reader);
 		
+		/* Get the data in the nested Json objects. */
 		JSONObject jsonObject = createNewJsonObject(jsonData);
 		JSONObject nestedJsonObject = getNestedJsonObject(jsonObject, "quote");
-		double latestPrice = getDoubleValueFromJson("latestPrice", nestedJsonObject);
 		
-		System.out.println(latestPrice);
+		double latestPrice = getDoubleValueFromJson("latestPrice", nestedJsonObject);
+		String companyName = getStringValueFromJson("companyName", nestedJsonObject);
+		
+		System.out.println(companyName);
 	}
 	
 	private URL buildURLForTicker(String ticker) {
@@ -95,15 +98,15 @@ public class DataManager {
 		return newObject;
 	}
 	
-//	private String getStringValueFromJsonObjectWithKey(String key, JSONObject jsonObject) {
-//		String result = "";
-//		try {
-//			result = (String) jsonObject.get(key);
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//		}
-//		return result;
-//	}
+	private String getStringValueFromJson(String key, JSONObject jsonObject) {
+		String result = "";
+		try {
+			result = (String) jsonObject.get(key);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 	
 	private double getDoubleValueFromJson(String key, JSONObject jsonObject) {
 		double result = 0.0;

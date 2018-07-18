@@ -8,7 +8,7 @@ public class Driver {
 
 	public static void main(String[] args) {
 		DataManager dataManager = new DataManager();
-		dataManager.getDataForTicker("ibm");
+		dataManager.getDataForTicker("agn");
 	}
 
 }
