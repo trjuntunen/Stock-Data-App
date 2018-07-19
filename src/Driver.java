@@ -8,7 +8,7 @@
 public class Driver {
 
 	public static void main(String[] args) {
-		Ticker ticker = new Ticker("aapl");
+		Ticker ticker = new Ticker("ibm");
 		String name = ticker.getStringValueWithKey("companyName");
 		System.out.println(name);
 	}

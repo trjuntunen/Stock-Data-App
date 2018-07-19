@@ -25,9 +25,27 @@ public class Ticker {
 	public Ticker(String ticker) {
 		this.ticker = ticker;
 		tickerDataObject = new JSONObject();
-		
-		/* Build the Ticker object when it's instantiated. */
 		buildTicker();
+	}
+	
+	public String getStringValueWithKey(String key) {
+		String result = "";
+		try {
+			result = (String) tickerDataObject.get(key);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	public double getDoubleValueWithKey(String key) {
+		double result = 0.0;
+		try {
+			result = (double) tickerDataObject.get(key);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 	
 	private void buildTicker() {
@@ -50,8 +68,7 @@ public class Ticker {
 	}
 	
 	private String establishConnectionAndRead(URL url) throws IOException {
-		URLConnection connection;
-		connection = url.openConnection();
+		URLConnection connection = url.openConnection();
 		InputStream inputStream = connection.getInputStream();
 		InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
 		BufferedReader reader = new BufferedReader(inputStreamReader);
@@ -80,26 +97,6 @@ public class Ticker {
 			e.printStackTrace();
 		}
 		return newURL;
-	}
-	
-	public String getStringValueWithKey(String key) {
-		String result = "";
-		try {
-			result = (String) tickerDataObject.get(key);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-	
-	public double getDoubleValueWithKey(String key) {
-		double result = 0.0;
-		try {
-			result = (double) tickerDataObject.get(key);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return result;
 	}
 	
 }
