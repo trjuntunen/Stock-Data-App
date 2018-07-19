@@ -30,24 +30,38 @@ public class Ticker {
 		buildTicker();
 	}
 	
-	/* Returns a JSONObject storing the returned API data for the given ticker. */
 	private void buildTicker() {
 		URL url = buildURLForTicker(ticker);
-		URLConnection connection = openConnectionToURL(url);
-		InputStreamReader inputStreamReader = getInputStreamReaderForConnection(connection);
-		BufferedReader reader = new BufferedReader(inputStreamReader);
-		
-		/* Only need to read one line because json is stored in one line. */
-		String jsonData = readLineWithReader(reader);
-		JSONObject jsonObject = createJsonObjectFromString(jsonData);
-		
-		/* The key "quote" is just the key for this API's json data. */
-		tickerDataObject = getNestedJsonObject(jsonObject, "quote");
+		String jsonData = read(url);
+		try {
+			tickerDataObject = createJsonObject(jsonData);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	private InputStreamReader getInputStreamReaderForConnection(URLConnection connection) {
-		InputStream inputStream = getInputStreamFromConnection(connection);
-		return new InputStreamReader(inputStream);
+	private String read(URL url) {
+		try {
+			return establishConnectionAndRead(url);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
+	
+	private String establishConnectionAndRead(URL url) throws IOException {
+		URLConnection connection;
+		connection = url.openConnection();
+		InputStream inputStream = connection.getInputStream();
+		InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+		BufferedReader reader = new BufferedReader(inputStreamReader);
+		/* Only need to read one line because json is stored in one line. */
+		return reader.readLine();
+	}
+	
+	private JSONObject createJsonObject(String jsonData) throws JSONException {
+		JSONObject jsonObject = new JSONObject(jsonData);
+		return jsonObject.getJSONObject("quote");
 	}
 	
 	private URL buildURLForTicker(String ticker) {
@@ -68,46 +82,6 @@ public class Ticker {
 		return newURL;
 	}
 	
-	private URLConnection openConnectionToURL(URL url) {
-		URLConnection connection = null;
-		try {
-			connection = url.openConnection();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return connection;
-	}
-	
-	private InputStream getInputStreamFromConnection(URLConnection connection) {
-		InputStream inputStream = null;
-		try {
-			inputStream = connection.getInputStream();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return inputStream;
-	}
-	
-	private String readLineWithReader(BufferedReader reader) {
-		String line = "";
-		try {
-			line = reader.readLine();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return line;
-	}
-	
-	private JSONObject getNestedJsonObject(JSONObject jsonObject, String key) {
-		JSONObject newObject = null;
-		try {
-			newObject = jsonObject.getJSONObject(key);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return newObject;
-	}
-	
 	public String getStringValueWithKey(String key) {
 		String result = "";
 		try {
@@ -126,16 +100,6 @@ public class Ticker {
 			e.printStackTrace();
 		}
 		return result;
-	}
-	
-	private JSONObject createJsonObjectFromString(String json) {
-		JSONObject jsonObject = null;
-		try {
-			jsonObject = new JSONObject(json);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return jsonObject;
 	}
 	
 }
