@@ -19,55 +19,55 @@ import org.json.JSONObject;
 
 public class Ticker {
 	
-	private JSONObject tickerDataObject;
+	private JSONObject tickerObject;
 	private String ticker;
 	
 	public Ticker(String ticker) {
 		this.ticker = ticker;
-		tickerDataObject = new JSONObject();
+		tickerObject = new JSONObject();
 		buildTicker();
-	}
-	
-	public String getStringValueWithKey(String key) {
-		String result = "";
-		try {
-			result = (String) tickerDataObject.get(key);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-	
-	public double getDoubleValueWithKey(String key) {
-		double result = 0.0;
-		try {
-			result = (double) tickerDataObject.get(key);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return result;
 	}
 	
 	private void buildTicker() {
 		URL url = buildURLForTicker(ticker);
 		String jsonData = read(url);
 		try {
-			tickerDataObject = createJsonObject(jsonData);
+			tickerObject = createJsonObject(jsonData);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 	}
 	
+	public String getString(String key) {
+		String result = "";
+		try {
+			result = (String) tickerObject.get(key);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	public double getDouble(String key) {
+		double result = 0.0;
+		try {
+			result = (double) tickerObject.get(key);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
 	private String read(URL url) {
 		try {
-			return establishConnectionAndRead(url);
+			return readURL(url);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return "";
 	}
 	
-	private String establishConnectionAndRead(URL url) throws IOException {
+	private String readURL(URL url) throws IOException {
 		URLConnection connection = url.openConnection();
 		InputStream inputStream = connection.getInputStream();
 		InputStreamReader inputStreamReader = new InputStreamReader(inputStream);

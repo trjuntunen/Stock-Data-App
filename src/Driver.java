@@ -8,15 +8,26 @@
 public class Driver {
 
 	public static void main(String[] args) {
-		Ticker ticker = new Ticker("pg");
+//		Ticker ticker = new Ticker("jnj");
 		
-		String name = ticker.getStringValueWithKey("companyName");
-		System.out.println(name);
+		String[] tickers = {"abt", "agn", "azo", "avy", "celg"};
 		
-		System.out.println();
+		for(int i = 0; i < tickers.length; i++) {
+			Ticker ticker = new Ticker(tickers[i]);
+			String name = ticker.getString("companyName");
+			double price = ticker.getDouble("latestPrice");
+			System.out.println(name);
+			System.out.println(price);
+			System.out.println();
+		}
 		
-		double price = ticker.getDoubleValueWithKey("latestPrice");
-		System.out.println(price);
+//		String name = ticker.getString("companyName");
+//		System.out.println(name);
+//		
+//		System.out.println();
+//		
+//		double price = ticker.getDouble("latestPrice");
+//		System.out.println(price);
 	}
 
 }
